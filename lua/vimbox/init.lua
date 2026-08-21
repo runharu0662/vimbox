@@ -1,5 +1,7 @@
 local M = {}
 
+local queue = require("vimbox.queue")
+
 function M.open()
 	local buf = vim.api.nvim_create_buf(false, true)
 	local config = {
@@ -20,6 +22,7 @@ function M.open()
 	vim.keymap.set("n", "<CR>", function()
 		local lines = vim.api.nvim_buf_get_lines(buf, 0, 1, false)
 		local text = lines[1]
+		queue.push(text)
 		vim.notify("Vimbox: " .. text)
 	end, { buffer = buf })
 end
