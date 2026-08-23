@@ -27,4 +27,15 @@ function M.open()
 	end, { buffer = buf })
 end
 
+function M.pop()
+	local item = queue.pop()
+
+	if item == nil then
+		vim.notify("Vimbox is empty")
+		return
+	end
+
+	vim.notify("Vimbox: " .. item)
+end
+
 return M
