@@ -143,7 +143,21 @@ function M.open()
 	end
 	vim.wo[state.list_win].cursorline = true
 	vim.wo[state.list_win].wrap = true
-	vim.keymap.set({ "n", "i" }, "<CR>", submit, { buffer = state.input_buf, desc = "Enqueue item" })
+	vim.wo[state.input_win].wrap = false
+	-- InsertEnter plugins can replace buffer mappings after this window opens.
+	local input_buf = state.input_buf
+	local function map_submit()
+		if state.input_buf ~= input_buf or not vim.api.nvim_buf_is_valid(input_buf) then return end
+		vim.keymap.set({ "n", "i" }, "<CR>", submit, { buffer = input_buf, desc = "Enqueue item" })
+	end
+	map_submit()
+	vim.api.nvim_create_autocmd({ "BufEnter", "InsertEnter" }, {
+		buffer = input_buf,
+		callback = function() vim.schedule(map_submit) end,
+	})
+	-- Completion should not consume Enter or Tab in this capture field.
+	local ok, cmp = pcall(require, "cmp")
+	if ok then cmp.setup.buffer({ enabled = false }) end
 	vim.keymap.set({ "n", "i" }, "<Esc>", function()
 		vim.cmd.stopinsert()
 		if state.edit_index then finish_edit() end

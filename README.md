@@ -73,4 +73,5 @@ Neovimだけで実行できます。テストは一時ディレクトリを使�
 
 ```sh
 nvim --headless -u NONE -i NONE -l tests/run.lua
+nvim --headless -u NONE -i NONE -l tests/input.lua
 ```
